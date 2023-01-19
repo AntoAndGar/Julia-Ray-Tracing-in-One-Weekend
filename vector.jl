@@ -1,4 +1,5 @@
 import Base
+include("raytrace_math.jl")
 
 struct Vec3{T <: Real}
     x::T
@@ -83,6 +84,37 @@ end
 
 function norm2(vec::Vec3)
     return sqrt(length_squared(vec))
+end
+
+function random_vec3()
+    return Vec3(random_double(),random_double(),random_double())
+end
+
+function random_vec3(min::Number, max::Number)
+    return Vec3(random_double(min,max),random_double(min,max),random_double(min,max))
+end
+
+function random_in_unit_sphere()
+    while true
+        p = random_vec3(-1.0,1.0)
+        if length_squared(p) >= 1
+            continue
+        end
+        return p
+    end
+end
+
+function random_unit_vector()
+    return unit_vector(random_in_unit_sphere())
+end
+
+function random_in_hemisphere(normal::Vec3)
+    in_unit_sphere = random_in_unit_sphere()
+    if dot(in_unit_sphere, normal) > 0.0 # In the same hemisphere as the normal
+        return in_unit_sphere
+    else
+        return -in_unit_sphere
+    end
 end
 
 #v = Vec3(1,2,3)
