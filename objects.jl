@@ -89,20 +89,56 @@ end
 
 struct Metal <: Material
     albedo::Vec3
+    fuzz::Float64
 
-    Metal() = new(Vec3{Float64}())
-    Metal(albedo) = new(albedo)
+    Metal() = new(Vec3{Float64}(), 0.)
+    Metal(albedo, fuzz) = new(albedo, fuzz)
 end
 
 function scatter(material::Metal, ray_in::Ray, hit_record::Hit_record, attenuation::Vec3, scattered::Ray)
     reflected = reflect(unit_vector(ray_in.direction), hit_record.normal)
     #scattered = Ray(hit_record.p, reflected)
     scattered.origin = hit_record.p
-    scattered.direction = reflected
+    scattered.direction = reflected + material.fuzz * random_in_unit_sphere()
     attenuation.x = material.albedo.x
     attenuation.y = material.albedo.y
     attenuation.z = material.albedo.z
     return (dot(scattered.direction, hit_record.normal) > 0)
 end
 
-# TODO: make the same with triangles and meshes
+struct Dielectric <: Material
+    ir::Float64 # Index of Refraction
+
+    Dielectric(ir) = new(ir)
+end
+
+function scatter(material::Dielectric, ray_in::Ray, hit_record::Hit_record, attenuation::Vec3, scattered::Ray)
+    attenuation.x = 1.0
+    attenuation.y = 1.0
+    attenuation.z = 1.0
+
+    refraction_ratio = hit_record.front_face ? (1.0 / material.ir) : material.ir
+
+    unit_direction = unit_vector(ray_in.direction)
+
+    cos_theta = min(dot(-unit_direction, hit_record.normal), 1.0)
+    sin_theta = sqrt(1.0 - cos_theta^2)
+
+    cannot_refract = refraction_ratio * sin_theta > 1.0
+    scattered.origin = hit_record.p
+    if cannot_refract || reflectance(cos_theta, refraction_ratio) > random_double()
+        # must reflect
+        scattered.direction = reflect(unit_direction, hit_record.normal)
+    else
+        # can refract
+        scattered.direction = refract(unit_direction, hit_record.normal, refraction_ratio)
+    end
+    return true
+end
+
+function reflectance(cosine::Float64, ref_idx::Float64)
+    # Use Schlick's approximation for reflectance.
+    r0 = (1-ref_idx) / (1+ref_idx)
+    r0 = r0^2
+    return r0 + (1-r0)*((1-cosine)^5)
+end
