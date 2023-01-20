@@ -1,11 +1,12 @@
 import Base
 include("raytrace_math.jl")
 
-struct Vec3{T <: Real}
+mutable struct Vec3{T <: Real}
     x::T
     y::T
     z::T
 
+    Vec3{T}() where {T<:Real} = new(0.,0.,0.)
     Vec3{T}(x,y,z) where {T<:Real} = new(x,y,z)
 end
 
@@ -117,6 +118,16 @@ function random_in_hemisphere(normal::Vec3)
     end
 end
 
+function near_zero(vec::Vec3)
+    s = 1e-8
+    return (abs(vec.x) < s) && (abs(vec.y) < s) && (abs(vec.z) < s)
+end
+
+function reflect(v::Vec3, n::Vec3)
+    return v - 2 * dot(v,n) * n
+end
+
+    
 #v = Vec3(1,2,3)
 #println(@elapsed(norm1(v)))
 #println(@elapsed(norm(v)))

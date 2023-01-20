@@ -17,7 +17,7 @@ function Base.push!(hittable_list::HittableList, hittable::Hittable)
 end
 
 function hit(list::hittable_list{Hittable}, ray::Ray, t_min::Float64, t_max::Float64, hit_record::Hit_record)::Bool
-    temp_hit_record = Hit_record(0, Vec3(0,0,0), Vec3(0,0,0), false)
+    temp_hit_record = Hit_record(0, Vec3{Float64}(), Vec3{Float64}(),Lambertian(), false)
     hit_anything = false
     closest_so_far = t_max
 
@@ -29,6 +29,7 @@ function hit(list::hittable_list{Hittable}, ray::Ray, t_min::Float64, t_max::Flo
             hit_record.p = temp_hit_record.p
             hit_record.normal = temp_hit_record.normal
             hit_record.front_face = temp_hit_record.front_face
+            hit_record.material = temp_hit_record.material
         end
     end
     return hit_anything

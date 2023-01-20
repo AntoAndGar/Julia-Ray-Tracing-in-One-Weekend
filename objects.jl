@@ -1,12 +1,22 @@
 include("vector.jl")
 
+abstract type Material end
+
+struct Lambertian <: Material
+    albedo::Vec3
+
+    Lambertian() = new(Vec3{Float64}())
+    Lambertian(albedo) = new(albedo)
+end
+
 mutable struct Hit_record
     t::Float64
     p::Vec3
     normal::Vec3
+    material::Material
     front_face::Bool
 
-    Hit_record(t, p, n, f) = new(t,p,n,f)
+    Hit_record(t, p, n, m, f) = new(t,p,n,m,f)
 end
 
 abstract type Hittable end
@@ -24,6 +34,10 @@ end
 struct Sphere <: Hittable
     center::Vec3
     radius::Float64
+    material::Material
+
+    Sphere() = new(Vec3{Float64}(), 1., Lambertian())
+    Sphere(center, radius, material) = new(center, radius, material)
 end
 
 function hit(sphere::Sphere, ray::Ray, t_min::Float64, t_max::Float64, hit_record::Hit_record)::Bool
@@ -48,8 +62,47 @@ function hit(sphere::Sphere, ray::Ray, t_min::Float64, t_max::Float64, hit_recor
     hit_record.p = at(ray, hit_record.t)
     outward_normal = (hit_record.p - sphere.center) / sphere.radius
     set_face_normal(hit_record, ray, outward_normal)
+    hit_record.material = sphere.material
 
     return true
+end
+
+function scatter(material::Material, ray_in::Ray, hit_record::Hit_record, attenuation::Vec3, scattered::Ray)
+    return false
+end
+
+function scatter(material::Lambertian, ray_in::Ray, hit_record::Hit_record, attenuation::Vec3, scattered::Ray)
+    scatter_direction  = hit_record.normal + random_unit_vector()
+    
+    if near_zero(scatter_direction)
+        scatter_direction = hit_record.normal
+    end
+    
+    #scattered = Ray(hit_record.p, scatter_direction)
+    scattered.origin = hit_record.p
+    scattered.direction = scatter_direction
+    attenuation.x = material.albedo.x
+    attenuation.y = material.albedo.y
+    attenuation.z = material.albedo.z
+    return true
+end
+
+struct Metal <: Material
+    albedo::Vec3
+
+    Metal() = new(Vec3{Float64}())
+    Metal(albedo) = new(albedo)
+end
+
+function scatter(material::Metal, ray_in::Ray, hit_record::Hit_record, attenuation::Vec3, scattered::Ray)
+    reflected = reflect(unit_vector(ray_in.direction), hit_record.normal)
+    #scattered = Ray(hit_record.p, reflected)
+    scattered.origin = hit_record.p
+    scattered.direction = reflected
+    attenuation.x = material.albedo.x
+    attenuation.y = material.albedo.y
+    attenuation.z = material.albedo.z
+    return (dot(scattered.direction, hit_record.normal) > 0)
 end
 
 # TODO: make the same with triangles and meshes

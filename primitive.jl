@@ -1,6 +1,6 @@
 include("vector.jl")
 
-struct Ray{T}
+mutable struct Ray{T}
     origin::T
     direction::T
 
