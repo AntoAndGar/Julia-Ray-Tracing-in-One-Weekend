@@ -2,7 +2,7 @@ include("vector.jl")
 include("primitive.jl")
 include("objects_structs.jl")
 include("raytrace_math.jl")
-include("camera.jl")
+include("camera0.jl")
 
 function write_color(im, pixel_color, samples_per_pixel)
     scale = 1.0 / samples_per_pixel
@@ -10,7 +10,7 @@ function write_color(im, pixel_color, samples_per_pixel)
     g = 256 * clamp(sqrt(pixel_color.y * scale), 0.0, 0.999)
     b = 256 * clamp(sqrt(pixel_color.z * scale), 0.0, 0.999)
 
-    write(im, "$r* $g $b\n")
+    write(im, "$r $g $b\n")
 end
 
 function ray_color(ray::Ray, world::HittableList, depth::Int64)

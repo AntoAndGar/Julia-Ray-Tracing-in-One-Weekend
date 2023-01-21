@@ -1,7 +1,7 @@
 using Random
 
 function deg2rad(degrees::Float64)
-    return degrees * Base.pi / 180
+    return degrees * pi / 180.0
 end
 
 function random_double() 
