@@ -134,6 +134,16 @@ function refract(uv::Vec3, n::Vec3, etai_over_etat::Number)
     return r_out_perp + r_out_parallel
 end
 
+function random_in_unit_disk()
+    while true
+        p = Vec3(random_double(-1.,1.), random_double(-1.,1.), 0.)
+        if length_squared(p) >= 1.
+            continue
+        end
+        return p
+    end
+end
+
     
 #v = Vec3(1,2,3)
 #println(@elapsed(norm1(v)))

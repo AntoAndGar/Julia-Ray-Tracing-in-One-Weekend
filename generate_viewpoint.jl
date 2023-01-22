@@ -2,7 +2,7 @@ include("vector.jl")
 include("primitive.jl")
 include("objects_structs.jl")
 include("raytrace_math.jl")
-include("camera.jl")
+include("camera1.jl")
 
 function write_color(im, pixel_color, samples_per_pixel)
     scale = 1.0 / samples_per_pixel
