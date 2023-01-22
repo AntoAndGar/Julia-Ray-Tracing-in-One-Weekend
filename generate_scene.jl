@@ -67,44 +67,49 @@ function random_scene()
     return world
 end
 
-# Image
-aspect_ratio = 3.0 / 2.0
-image_w = 720
-image_h = trunc(image_w / aspect_ratio)
-samples_per_pixel = 100
-max_depth = 10;
+function main()
+    # Image
+    aspect_ratio = 3.0 / 2.0
+    image_w = 720
+    image_h = trunc(image_w / aspect_ratio)
+    samples_per_pixel = 10
+    max_depth = 10;
 
-# World
-world = random_scene()
+    # World
+    world = random_scene()
 
-# Camera
-lookfrom = Vec3(13., 2., 3.)
-lookat = Vec3(0., 0., 0.)
-vup = Vec3(0., 1., 0.)
-aperture = 0.1
-dist_to_focus = 10.0
+    # Camera
+    lookfrom = Vec3(13., 2., 3.)
+    lookat = Vec3(0., 0., 0.)
+    vup = Vec3(0., 1., 0.)
+    aperture = 0.1
+    dist_to_focus = 10.0
 
-camera = Camera(lookfrom, lookat, vup, 20.0, aspect_ratio, aperture, dist_to_focus)
+    camera = Camera(lookfrom, lookat, vup, 20.0, aspect_ratio, aperture, dist_to_focus)
 
-filename = "image_scene.ppm"
-touch(filename)
-im = open(filename, "w")
+    filename = "image_scene.ppm"
+    touch(filename)
+    im = open(filename, "w")
 
-write(im, "P3\n$image_w $image_h\n255\n")
+    write(im, "P3\n$image_w $image_h\n255\n")
 
-for j in image_h:-1:1
-    println("Scanlines remaining: $j")
-    for i in 1:image_w
-        pixel_color = Vec3{Float64}()
-        Threads.@threads for s in 1:samples_per_pixel
-            u = (i + random_double()) / (image_w - 1)
-            v = (j + random_double()) / (image_h - 1)
-            r = get_ray(camera, u, v)
-            pixel_color += ray_color(r, world, max_depth)
+    for j in image_h:-1:1
+        println("Scanlines remaining: $j")
+        for i in 1:image_w
+            pixel_color = Vec3{Float64}()
+            for s in 1:samples_per_pixel
+                u = (i + random_double()) / (image_w - 1)
+                v = (j + random_double()) / (image_h - 1)
+                r = get_ray(camera, u, v)
+                pixel_color += ray_color(r, world, max_depth)
+            end
+            write_color(im, pixel_color, samples_per_pixel)
         end
-        write_color(im, pixel_color, samples_per_pixel)
     end
+
+    println("Done!")
+    close(im)
+
 end
 
-println("Done!")
-close(im)
+main()
