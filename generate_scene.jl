@@ -72,8 +72,8 @@ function main()
     aspect_ratio = 3.0 / 2.0
     image_w = 720
     image_h = trunc(image_w / aspect_ratio)
-    samples_per_pixel = 10
-    max_depth = 10;
+    samples_per_pixel = 500
+    max_depth = 50
 
     # World
     world = random_scene()
