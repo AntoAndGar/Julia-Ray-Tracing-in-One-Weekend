@@ -1,7 +1,7 @@
 include("vector1.jl")
 include("primitive1.jl")
 include("objects_structs1.jl")
-include("raytrace_math.jl")
+include("../raytrace_math.jl")
 include("camera_vec.jl")
 #import Pkg 
 #Pkg.add("Images")
@@ -34,7 +34,7 @@ function save_image(filename::String, image_::Array{Array{Float64, 1}})
     
     colored_image = zeros(RGB, size(image))
     Threads.@threads for i in 1:size(image)[1]
-        for j in 1:size(image)[2]
+        Threads.@threads for j in 1:size(image)[2]
             colored_image[i,j] = RGB(image[i,j][1], image[i,j][2], image[i,j][3])
         end
     end
@@ -126,7 +126,7 @@ function main()
 
     Threads.@threads for i in 1:image_w
         println("Doing column: $i")
-        for j in 1:image_h
+        Threads.@threads for j in 1:image_h
             image[i,j] = vec(zeros(Float64, 1, 3))
             for s in 1:samples_per_pixel
                 u = (i + random_double()) / (image_w - 1)
@@ -139,7 +139,7 @@ function main()
         #save_image("raytracing_vec1.png", image)
     end
 
-    save_image("raytracing_vec1.png", image)
+    save_image("raytracing_vec_2.png", image)
     println("Done!")
     #close(im)
 

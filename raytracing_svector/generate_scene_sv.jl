@@ -1,7 +1,7 @@
 include("vector_sv.jl")
 include("primitive_sv.jl")
 include("objects_structs_sv.jl")
-include("raytrace_math.jl")
+include("../raytrace_math.jl")
 include("camera_sv.jl")
 using Images
 
@@ -120,7 +120,7 @@ function main()
         #save_image("raytracing_vec1.png", image)
     end
 
-    save_image("raytracing_vec_sv.png", image)
+    save_image("raytracing_sv_1.png", image)
     println("Done!")
 end
 

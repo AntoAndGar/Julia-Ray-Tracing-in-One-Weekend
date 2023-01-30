@@ -1,4 +1,4 @@
-include("raytrace_math.jl")
+include("../raytrace_math.jl")
 
 struct Camera
     lookfrom::Vec3 # origin

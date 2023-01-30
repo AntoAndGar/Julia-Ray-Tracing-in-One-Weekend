@@ -1,30 +1,36 @@
 import Base
-include("raytrace_math.jl")
-# import Pkg
-# Pkg.add("StaticArrays")
-using StaticArrays
+include("../raytrace_math.jl")
 
-const Vec3 = SVector{3, Float32}
+struct Vec3
+    x::Float64
+    y::Float64
+    z::Float64
 
-# useless function since instance[1]/[2]/[3] access the value that we want (and resemble a method)
+    Vec3() = new(0.,0.,0.)
+    Vec3(x,y,z) = new(x,y,z)
+end
+
+#Vec3(x::Float64,y::Float64,z::Float64) = Vec3(x,y,z)
+
+# useless function since instance.x/.y/.z access the value that we want (and resemble a method)
 # function x(vec::Vec3)
-#     return Vec3[1]
+#     return Vec3.x
 # end
 
 # function y(vec::Vec3)
-#     return Vec3[2]
+#     return Vec3.y
 # end
 
 # function z(vec::Vec3)
-#     return Vec3[3]
+#     return Vec3.z
 # end
 
 function Base.:-(vec::Vec3)
-    return Vec3(-vec[1], -vec[2], -vec[3])
+    return Vec3(-vec.x, -vec.y, -vec.z)
 end
 
 function Base.:+(vec1::Vec3, vec2::Vec3)
-    return Vec3(vec1[1] + vec2[1], vec1[2] + vec2[2], vec1[3] + vec2[3])
+    return Vec3(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z)
 end
 
 function Base.:-(vec1::Vec3, vec2::Vec3)
@@ -32,7 +38,7 @@ function Base.:-(vec1::Vec3, vec2::Vec3)
 end
 
 function Base.:*(vec1::Vec3, vec2::Vec3)
-    return Vec3(vec1[1] * vec2[1], vec1[2] * vec2[2], vec1[3] * vec2[3])
+    return Vec3(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z)
 end
 
 # how this shitty code can be refactored?
@@ -46,19 +52,19 @@ end
 ###
 
 function Base.:/(vec::Vec3, scalar::Number)
-    return Vec3(vec[1] / scalar, vec[2] / scalar, vec[3] / scalar)
+    return Vec3(vec.x / scalar, vec.y / scalar, vec.z / scalar)
 end
 
 function Base.:/(scalar::Number, vec::Vec3)
-    return Vec3(scalar / vec[1], scalar / vec[2], scalar / vec[3])
+    return Vec3(scalar / vec.x, scalar / vec.y, scalar / vec.z)
 end
 
 function dot(vec1::Vec3, vec2::Vec3)
-    return vec1[1] * vec2[1] + vec1[2] * vec2[2] + vec1[3] * vec2[3]
+    return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z
 end
 
 function cross(vec1::Vec3, vec2::Vec3)
-    return Vec3(vec1[2] * vec2[3] - vec1[3] * vec2[2], vec1[3] * vec2[1] - vec1[1] * vec2[3], vec1[1] * vec2[2] - vec1[2] * vec2[1])
+    return Vec3(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x)
 end
 
 function unit_vector(vec::Vec3)
@@ -70,11 +76,11 @@ function length_squared(vec::Vec3)
 end
 
 function norm(vec::Vec3)
-    return sqrt(vec[1]^2 + vec[2]^2 + vec[3]^2)
+    return sqrt(vec.x^2 + vec.y^2 + vec.z^2)
 end
 
 function norm1(vec::Vec3)
-    return sqrt(vec[1]*vec[1] + vec[2]*vec[2] + vec[3]*vec[3])
+    return sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z)
 end
 
 function norm2(vec::Vec3)
@@ -114,7 +120,7 @@ end
 
 function near_zero(vec::Vec3)
     s = 1e-8
-    return (abs(vec[1]) < s) && (abs(vec[2]) < s) && (abs(vec[3]) < s)
+    return (abs(vec.x) < s) && (abs(vec.y) < s) && (abs(vec.z) < s)
 end
 
 function reflect(v::Vec3, n::Vec3)
@@ -138,19 +144,6 @@ function random_in_unit_disk()
     end
 end
 
-
-# v = Vec3(1,2,3)
-# v1 = Vec3([1,2,3])
-# println(v1)
-
-# v2 = v + v1
-# println(v2)
-
-# v3 = Vec3(zeros(Float64, 1, 3))
-# println(v3)
-
-# v4 = v3 + v2
-# println(v4)
     
 #v = Vec3(1,2,3)
 #println(@elapsed(norm1(v)))

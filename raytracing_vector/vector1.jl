@@ -1,5 +1,5 @@
 import Base
-include("raytrace_math.jl")
+include("../raytrace_math.jl")
 
 # useless function since instance[1]/[2]/[3] access the value that we want (and resemble a method)
 # function x(vec::Array{Float64, 1})
